@@ -7,20 +7,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Tank  {
     int x=200,y=200;
-    private final int SPEED=10;
+    private final int SPEED=5;
     private Dir dir= Dir.LEFT;
-    private boolean moving=false;
+    private boolean moving=true;
 //    private Buller buller;
-    private TankFrame frame;
+    private GameModel frame;
     private final int MaxBullers=100;
-
+    private Group group;
+    public boolean isLving=true;
+    public static final int Tank_WIDTH=ResourceMgr.badTankL.getWidth(),Tank_HEIGHT=ResourceMgr.badTankL.getHeight();
     public int getX() {
         return x;
     }
-
+    public Rectangle rect=new Rectangle(0,0,0,0);
     public void setX(int x) {
         this.x = x;
     }
@@ -37,32 +40,75 @@ public class Tank  {
         this.dir = dir;
     }
 
-    public Tank(int x, int y, Dir dir,TankFrame frame) {
+    public Dir getDir() {
+        return dir;
+    }
+
+    public GameModel getFrame() {
+        return frame;
+    }
+
+    public void setFrame(GameModel frame) {
+        this.frame = frame;
+    }
+
+    public int getMaxBullers() {
+        return MaxBullers;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public boolean isLving() {
+        return isLving;
+    }
+
+    public void setLving(boolean lving) {
+        isLving = lving;
+    }
+    private FireStrategy fireStrategy;
+    public Tank(int x, int y, Dir dir, Group group, GameModel frame) {
         this.x = x;
         this.y = y;
         this.dir = dir;
         this.frame=frame;
+        this.group=group;
+        rect.x=x;
+        rect.y=y;
+        rect.width=Tank_WIDTH;
+        rect.height=Tank_HEIGHT;
+        fireStrategy=this.group==Group.GOOD?new QiangFireStrategy():new DefaultStrategy();
     }
 
 
     public void paint(Graphics g) throws IOException {
-
+//        if(!isLving){
+//            frame.badTanks.remove(this);
+//            return;
+//        }
 //        Color c = g.getColor();
 //        g.setColor(Color.BLUE);
+        randomDir();
         move();
+        checkBorder();
 //        g.drawImage(image,x,y,image.getWidth(),image.getHeight(),null);
         switch(dir) {
             case LEFT:
-                g.drawImage(/*this.group == Group.GOOD? ResourceMgr.goodTankL : */ResourceMgr.badTankL, x, y, null);
+                g.drawImage(this.group == Group.GOOD? ResourceMgr.goodTankL : ResourceMgr.badTankL, x, y, null);
                 break;
             case UP:
-                g.drawImage(/*this.group == Group.GOOD? ResourceMgr.goodTankU : */ResourceMgr.badTankU, x, y, null);
+                g.drawImage(this.group == Group.GOOD? ResourceMgr.goodTankU : ResourceMgr.badTankU, x, y, null);
                 break;
             case RIGHT:
-                g.drawImage(/*this.group == Group.GOOD? ResourceMgr.goodTankR :*/ ResourceMgr.badTankR, x, y, null);
+                g.drawImage(this.group == Group.GOOD? ResourceMgr.goodTankR : ResourceMgr.badTankR, x, y, null);
                 break;
             case DOWN:
-                g.drawImage(/*this.group == Group.GOOD? ResourceMgr.goodTankD :*/ ResourceMgr.badTankD, x, y, null);
+                g.drawImage(this.group == Group.GOOD? ResourceMgr.goodTankD : ResourceMgr.badTankD, x, y, null);
                 break;
         }
 
@@ -73,6 +119,26 @@ public class Tank  {
 
     }
 
+    private void checkBorder() {
+        if(x<2)x=2;
+        if(y<Tank_HEIGHT/2+2)y=Tank_HEIGHT/2+2;
+        if(x>TankFrame.GAME_WIDTH-Tank_WIDTH-2)x=TankFrame.GAME_WIDTH-Tank_WIDTH-2;
+        if(y>TankFrame.GAME_HEIGHT-Tank_HEIGHT-2)y=TankFrame.GAME_HEIGHT-Tank_HEIGHT-2;
+//        for (int i = 0; i <frame.badTanks.size() ; i++) {
+//            boolean intersects = frame.badTanks.get(i).rect.intersects(rect);
+//            if(intersects){
+//
+//            }
+//        }
+    }
+
+    private void randomDir() {
+        if(group==Group.BAD&&random.nextInt(100)>80){
+            dir=Dir.values()[random.nextInt(4)];
+        }
+    }
+
+    private Random random=new Random();
     private void move() {
         if(!moving)return;
         switch (dir) {
@@ -90,6 +156,10 @@ public class Tank  {
                 y+=SPEED;
                 break;
         }
+        rect.x=x;
+        rect.y=y;
+        if(group==Group.BAD&&random.nextInt(100)>95)
+            fire();
     }
 
     public void setMoving(boolean moving) {
@@ -97,28 +167,15 @@ public class Tank  {
     }
 
     public void fire() {
+        fireStrategy.fire(this);
+    }
+
+    public void die() {
+        isLving=false;
         int bx = x,by=y;
-
-        switch(dir) {
-            case LEFT:
-                by=this.getY()+(ResourceMgr.badTankL.getHeight()/2)-ResourceMgr.bulletU.getHeight()/2;
-                break;
-            case UP:
-//                g.drawImage(/*this.group == Group.GOOD? ResourceMgr.goodTankU : */ResourceMgr.badTankU, x, y, null);
-                bx=this.getX()+(ResourceMgr.badTankU.getWidth()/2)-ResourceMgr.bulletU.getHeight()/2;
-                break;
-            case RIGHT:
-//                g.drawImage(/*this.group == Group.GOOD? ResourceMgr.goodTankR :*/ ResourceMgr.badTankR, x, y, null);
-                by=this.getY()+(ResourceMgr.badTankR.getHeight()/2)-ResourceMgr.bulletU.getHeight()/2;
-                break;
-            case DOWN:
-//                g.drawImage(/*this.group == Group.GOOD? ResourceMgr.goodTankD :*/ ResourceMgr.badTankD, x, y, null);
-                bx=this.getX()+(ResourceMgr.badTankD.getWidth()/2)-ResourceMgr.bulletU.getHeight()/2;
-                break;
-        }
-        System.out.println("by"+by);
-        Buller buller=new Buller(dir,bx,by,frame);
-      if(frame.bullets.size()<MaxBullers) frame.bullets.add(buller);
-
+        bx=this.getX()+(ResourceMgr.badTankU.getWidth()/2)-Explode.WIDTH/2;
+        by=this.getY()+(ResourceMgr.badTankL.getHeight()/2)-Explode.HEIGHT/2;
+        Explode explode = new Explode(bx, by,frame);
+        frame.explodes.add(explode);
     }
 }

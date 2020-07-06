@@ -7,24 +7,24 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class TankFrame extends Frame {
-    int x=200,y=200;
-    private Tank myTank;
+
+
 
     private final int MaxBullers=100;
     private final int SPEED=10;
-    private Dir dir= Dir.LEFT;
+
     public static final int GAME_WIDTH=800,GAME_HEIGHT=600;
-     List<Buller> bullets =new ArrayList<Buller>();
-     private List<Tank> badTanks=new ArrayList();
+    public GameModel gm;
     public TankFrame(){
         setSize(GAME_WIDTH,GAME_HEIGHT);
         setResizable(false);
         setTitle("tank war");
         setVisible(true);
-        myTank=new Tank(x,y,dir,this);
+        gm=new GameModel();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -32,6 +32,7 @@ public class TankFrame extends Frame {
             }
         });
         addKeyListener(new MyKeyListener());
+        new Thread(()->new Audio("audio/war1.wav").play()).start();
     }
     class MyKeyListener extends KeyAdapter {
 
@@ -67,9 +68,7 @@ public class TankFrame extends Frame {
                     break;
             }
 
-
-
-//            new Thread(()->new Audio("audio/tank_move.wav").play()).start();
+            new Thread(()->new Audio("audio/tank_move.wav").play()).start();
         }
 
         @Override
@@ -95,7 +94,7 @@ public class TankFrame extends Frame {
                     break;
 
                 case KeyEvent.VK_CONTROL:
-                    myTank.fire();
+                    gm.getMyTank().fire();
                     break;
 
                 default:
@@ -106,7 +105,7 @@ public class TankFrame extends Frame {
         }
 
         private void setMainTankDir() {
-
+           Tank myTank=gm.getMyTank();
             if (!bL && !bU && !bR && !bD) {
                 myTank.setMoving(false);
             }else{
@@ -175,24 +174,8 @@ public class TankFrame extends Frame {
 
     @Override
     public void paint(Graphics g) {
-//        super.paint(g);
-        Color c = g.getColor();
-        g.setColor(Color.WHITE);
-        g.drawString("bullets:" + bullets.size(), 10, 60);
-//        g.drawString("tanks:" + tanks.size(), 10, 80);
-//        g.drawString("explodes" + explodes.size(), 10, 100);
-        g.setColor(c);
-        try {
-            if(myTank!=null)
-            myTank.paint(g);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for (int i = 0; i <bullets.size() ; i++) {
-            bullets.get(i).paint(g);
-        }
-
-//        y+=10;
+        if(gm!=null)
+             gm.paint(g);
     }
 
 }
