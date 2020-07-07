@@ -3,28 +3,31 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Buller {
+public class Buller  extends GameObject{
     private static final int SPEED=10;
     private Dir dir;
-    private int x,y;
-    private int WIGHT=10,HIGHT=10;
-    private GameModel tf;
+
     private Rectangle rect=new Rectangle(0,0,0,0);
     public static int WIDTH = ResourceMgr.bulletD.getWidth();
     public boolean isLving=true;
     public static int HEIGHT = ResourceMgr.bulletD.getHeight();
     Group group;
-    public Buller(Dir dir, int x, int y, Group group,GameModel tf) {
+
+    public Rectangle getRect() {
+        return rect;
+    }
+
+    public Buller(Dir dir, int x, int y, Group group) {
 
         this.dir = dir;
         this.x = x;
         this.y = y;
-        this.tf=tf;
         rect.x=x;
         rect.y=y;
         rect.width = WIDTH;
         rect.height = HEIGHT;
         this.group=group;
+//        GameModel.getInstance().add(this);
     }
 
     public void paint(Graphics g) {
@@ -48,6 +51,17 @@ public class Buller {
 //        g.setColor(c);
 
     }
+
+    @Override
+    public int getWIDTH() {
+        return WIDTH;
+    }
+
+    @Override
+    public int getHEIGHT() {
+        return HEIGHT;
+    }
+
     private void move() {
 //        if(!moving)return;
         switch (dir) {
@@ -67,18 +81,21 @@ public class Buller {
         }
         rect.x=x;
         rect.y=y;
-        if(x<0||y<0||x>TankFrame.GAME_WIDTH||y>TankFrame.GAME_HEIGHT||!isLving)tf.bullets.remove(this);
+        if(x<0||y<0||x>TankFrame.GAME_WIDTH||y>TankFrame.GAME_HEIGHT||!isLving)GameModel.getInstance().remove(this);
     }
 
-    public void collideWith(Tank tank) {
-        if(this.group==Group.BAD&&tank.getGroup()==Group.BAD)return;
+    public boolean collideWith(Tank tank) {
+        if(this.group==Group.BAD&&tank.getGroup()==Group.BAD)return true;
+        if(tank.getGroup()==Group.GOOD)return true;
         if(this.rect.intersects(tank.rect)){
             tank.die();
             this.die();
+            return false;
         }
+        return true;
     }
 
-    private void die() {
+    public void die() {
         isLving=false;
     }
 }

@@ -1,5 +1,7 @@
 package com.jintang;
 
+import com.jintang.collider.*;
+
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -7,10 +9,24 @@ import java.util.Iterator;
 import java.util.List;
 
 public class GameModel {
+
+   private static GameModel instance=new GameModel();
+    public static GameModel getInstance(){
+        return instance;
+    }
     private Tank myTank;
-    public List<Tank> badTanks=new ArrayList();
-    List<Explode> explodes = new ArrayList<>();
-    List<Buller> bullets =new ArrayList<Buller>();
+//    public List<Tank> badTanks=new ArrayList();
+//    List<Explode> explodes = new ArrayList<>();
+//    List<Buller> bullets =new ArrayList<Buller>();
+protected List<GameObject> objs=new ArrayList();
+   private ColliderChain colliderChain;
+   public void add(GameObject obj){
+
+        objs.add(obj);
+    }
+    public void remove(GameObject obj){
+        objs.remove(obj);
+    }
     private Dir dir= Dir.LEFT;
     private int maxBadTank=5;
     int x=200,y=200;
@@ -22,30 +38,30 @@ public class GameModel {
     public void setMyTank(Tank myTank) {
         this.myTank = myTank;
     }
-
-    public List<Tank> getBadTanks() {
-        return badTanks;
-    }
-
-    public void setBadTanks(List<Tank> badTanks) {
-        this.badTanks = badTanks;
-    }
-
-    public List<Explode> getExplodes() {
-        return explodes;
-    }
-
-    public void setExplodes(List<Explode> explodes) {
-        this.explodes = explodes;
-    }
-
-    public List<Buller> getBullets() {
-        return bullets;
-    }
-
-    public void setBullets(List<Buller> bullets) {
-        this.bullets = bullets;
-    }
+//
+//    public List<Tank> getBadTanks() {
+//        return badTanks;
+//    }
+//
+//    public void setBadTanks(List<Tank> badTanks) {
+//        this.badTanks = badTanks;
+//    }
+//
+//    public List<Explode> getExplodes() {
+//        return explodes;
+//    }
+//
+//    public void setExplodes(List<Explode> explodes) {
+//        this.explodes = explodes;
+//    }
+//
+//    public List<Buller> getBullets() {
+//        return bullets;
+//    }
+//
+//    public void setBullets(List<Buller> bullets) {
+//        this.bullets = bullets;
+//    }
 
     public Dir getDir() {
         return dir;
@@ -70,21 +86,34 @@ public class GameModel {
     public void setY(int y) {
         this.y = y;
     }
-
-    public GameModel() {
-        myTank=new Tank(x,y,dir,Group.GOOD,this);
+    public void init(){
+        myTank=new Tank(x,y,dir,Group.GOOD);
         myTank.setMoving(false);
         for (int i = 0; i <maxBadTank ; i++) {
-            Tank tank = new Tank(30 + i * 100, 30, Dir.DOWN, Group.BAD, this);
-            badTanks.add(tank);
+            Tank tank = new Tank(30 + i * 100, 30, Dir.DOWN, Group.BAD);
+//            badTanks.add(tank);
         }
+        // 初始化墙
+        add(new Wall(150, 150, 200, 50));
+        add(new Wall(550, 150, 200, 50));
+        add(new Wall(300, 300, 50, 200));
+        add(new Wall(550, 300, 50, 200));
+
+        colliderChain=new ColliderChain();
+        colliderChain.add(new BullerTankColliderImpl());
+        colliderChain.add(new TankTankColliderImpl());
+        colliderChain.add(new BullerWallColliderImpl());
+        colliderChain.add(new TankWallColliderImpl());
+    }
+    private GameModel() {
+
     }
     public void paint(Graphics g) {
 //        super.paint(g);
         Color c = g.getColor();
         g.setColor(Color.WHITE);
-        g.drawString("bullets:" + bullets.size(), 10, 60);
-        g.drawString("tanks:" + badTanks.size(), 10, 80);
+        g.drawString("bullets:" + objs.size(), 10, 60);
+        g.drawString("tanks:" + objs.size(), 10, 80);
 //        g.drawString("explodes" + explodes.size(), 10, 100);
         g.setColor(c);
         try {
@@ -93,34 +122,45 @@ public class GameModel {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        for (int i = 0; i <bullets.size() ; i++) {
-            bullets.get(i).paint(g);
-        }
-        Iterator<Tank> iterator = badTanks.iterator();
+
+        Iterator<GameObject> iterator = objs.iterator();
         while (iterator.hasNext()){
-            if(!iterator.next().isLving){
+            GameObject next = iterator.next();
+            if(next instanceof Tank &&((Tank) next).getGroup()==Group.BAD&&!((Tank) next).isLving){
                 iterator.remove();
             }
         }
 //        System.out.println("badTanks.size()"+badTanks.size());
-        for (int i = 0; i <badTanks.size() ; i++) {
+//        for (int i = 0; i <badTanks.size() ; i++) {
+//            try {
+//                badTanks.get(i).paint(g);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        for (int i = 0; i <bullets.size() ; i++) {
+//            for (int j = 0; j <badTanks.size() ; j++) {
+//
+//                bullets.get(i).collideWith(badTanks.get(j));
+//
+//            }
+//        }
+        for (int i = 0; i < objs.size() ; i++) {
             try {
-                badTanks.get(i).paint(g);
+                objs.get(i).paint(g);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        for (int i = 0; i <bullets.size() ; i++) {
-            for (int j = 0; j <badTanks.size() ; j++) {
-
-                bullets.get(i).collideWith(badTanks.get(j));
-
+        for (int i = 0; i < objs.size() ; i++) {
+            for (int j = i+1; j < objs.size() ; j++) {
+                colliderChain.compartor(objs.get(i),objs.get(j));
             }
         }
-        for (int i = 0; i <explodes.size() ; i++) {
-            explodes.get(i).paint(g);
-
-        }
+//        for (int i = 0; i <explodes.size() ; i++) {
+//            explodes.get(i).paint(g);
+//
+//        }
 //        y+=10;
     }
 }

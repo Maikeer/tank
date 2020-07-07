@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Tank  {
+public class Tank  extends GameObject {
     int x=200,y=200;
     private final int SPEED=5;
     private Dir dir= Dir.LEFT;
     private boolean moving=true;
 //    private Buller buller;
-    private GameModel frame;
+    int oldx=200,oldy=200;
     private final int MaxBullers=100;
     private Group group;
     public boolean isLving=true;
@@ -27,7 +27,8 @@ public class Tank  {
     public void setX(int x) {
         this.x = x;
     }
-
+    private boolean isCollider=false;
+    private Dir colliderDir;
     public int getY() {
         return y;
     }
@@ -39,18 +40,21 @@ public class Tank  {
     public void setDir(Dir dir) {
         this.dir = dir;
     }
+    @Override
+    public int getWIDTH() {
+        return Tank_WIDTH;
+    }
+
+    @Override
+    public int getHEIGHT() {
+        return Tank_HEIGHT;
+    }
 
     public Dir getDir() {
         return dir;
     }
 
-    public GameModel getFrame() {
-        return frame;
-    }
 
-    public void setFrame(GameModel frame) {
-        this.frame = frame;
-    }
 
     public int getMaxBullers() {
         return MaxBullers;
@@ -72,20 +76,22 @@ public class Tank  {
         isLving = lving;
     }
     private FireStrategy fireStrategy;
-    public Tank(int x, int y, Dir dir, Group group, GameModel frame) {
+    public Tank(int x, int y, Dir dir, Group group) {
         this.x = x;
         this.y = y;
         this.dir = dir;
-        this.frame=frame;
+
         this.group=group;
         rect.x=x;
         rect.y=y;
         rect.width=Tank_WIDTH;
         rect.height=Tank_HEIGHT;
         fireStrategy=this.group==Group.GOOD?new QiangFireStrategy():new DefaultStrategy();
+        GameModel.getInstance().add(this);
     }
 
 
+    @Override
     public void paint(Graphics g) throws IOException {
 //        if(!isLving){
 //            frame.badTanks.remove(this);
@@ -137,10 +143,21 @@ public class Tank  {
             dir=Dir.values()[random.nextInt(4)];
         }
     }
-
+    public void back(boolean flag){
+        if(flag&&group==Group.GOOD){
+            isCollider=true;
+            colliderDir=dir;
+        }else{
+            x=oldx;
+            y=oldy;
+        }
+    }
     private Random random=new Random();
     private void move() {
-        if(!moving)return;
+        if(!moving||(isCollider&&colliderDir==dir))return;
+        isCollider=false;
+        oldx=x;
+        oldy=y;
         switch (dir) {
             case LEFT:
                 x-=SPEED;
@@ -175,7 +192,7 @@ public class Tank  {
         int bx = x,by=y;
         bx=this.getX()+(ResourceMgr.badTankU.getWidth()/2)-Explode.WIDTH/2;
         by=this.getY()+(ResourceMgr.badTankL.getHeight()/2)-Explode.HEIGHT/2;
-        Explode explode = new Explode(bx, by,frame);
-        frame.explodes.add(explode);
+        Explode explode = new Explode(bx, by);
+//        GameModel.getInstance().add(explode);
     }
 }

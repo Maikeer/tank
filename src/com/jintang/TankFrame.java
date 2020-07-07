@@ -18,13 +18,13 @@ public class TankFrame extends Frame {
     private final int SPEED=10;
 
     public static final int GAME_WIDTH=800,GAME_HEIGHT=600;
-    public GameModel gm;
     public TankFrame(){
         setSize(GAME_WIDTH,GAME_HEIGHT);
         setResizable(false);
         setTitle("tank war");
         setVisible(true);
-        gm=new GameModel();
+
+        GameModel.getInstance().init();
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -94,7 +94,7 @@ public class TankFrame extends Frame {
                     break;
 
                 case KeyEvent.VK_CONTROL:
-                    gm.getMyTank().fire();
+                    GameModel.getInstance().getMyTank().fire();
                     break;
 
                 default:
@@ -105,7 +105,8 @@ public class TankFrame extends Frame {
         }
 
         private void setMainTankDir() {
-           Tank myTank=gm.getMyTank();
+           Tank myTank= GameModel.getInstance().getMyTank();
+
             if (!bL && !bU && !bR && !bD) {
                 myTank.setMoving(false);
             }else{
@@ -174,8 +175,7 @@ public class TankFrame extends Frame {
 
     @Override
     public void paint(Graphics g) {
-        if(gm!=null)
-             gm.paint(g);
+            GameModel.getInstance().paint(g);
     }
 
 }
