@@ -1,9 +1,11 @@
 package com.jintang;
 
 import com.jintang.collider.*;
+import com.jintang.observer.FireObserverImpl;
+import com.jintang.observer.IObserver;
 
 import java.awt.*;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +21,13 @@ public class GameModel {
 //    List<Explode> explodes = new ArrayList<>();
 //    List<Buller> bullets =new ArrayList<Buller>();
 protected List<GameObject> objs=new ArrayList();
-   private ColliderChain colliderChain;
+   private List<IObserver<Tank>> observers=new ArrayList<>();
+
+    public List<IObserver<Tank>> getObservers() {
+        return observers;
+    }
+
+    private ColliderChain colliderChain;
    public void add(GameObject obj){
 
         objs.add(obj);
@@ -98,7 +106,7 @@ protected List<GameObject> objs=new ArrayList();
         add(new Wall(550, 150, 200, 50));
         add(new Wall(300, 300, 50, 200));
         add(new Wall(550, 300, 50, 200));
-
+        observers.add(new FireObserverImpl());
         colliderChain=new ColliderChain();
         colliderChain.add(new BullerTankColliderImpl());
         colliderChain.add(new TankTankColliderImpl());
@@ -123,13 +131,7 @@ protected List<GameObject> objs=new ArrayList();
             e.printStackTrace();
         }
 
-        Iterator<GameObject> iterator = objs.iterator();
-        while (iterator.hasNext()){
-            GameObject next = iterator.next();
-            if(next instanceof Tank &&((Tank) next).getGroup()==Group.BAD&&!((Tank) next).isLving){
-                iterator.remove();
-            }
-        }
+
 //        System.out.println("badTanks.size()"+badTanks.size());
 //        for (int i = 0; i <badTanks.size() ; i++) {
 //            try {
@@ -157,10 +159,58 @@ protected List<GameObject> objs=new ArrayList();
                 colliderChain.compartor(objs.get(i),objs.get(j));
             }
         }
+        Iterator<GameObject> iterator = objs.iterator();
+        while (iterator.hasNext()){
+            GameObject next = iterator.next();
+            if(next instanceof Tank &&((Tank) next).getGroup()==Group.BAD&&!((Tank) next).isLving){
+                iterator.remove();
+            }
+        }
 //        for (int i = 0; i <explodes.size() ; i++) {
 //            explodes.get(i).paint(g);
 //
 //        }
 //        y+=10;
+    }
+    public void save(){
+        File file = new File("d:/tankData/my.data");
+        ObjectOutputStream outputStream=null;
+        try {
+             outputStream = new ObjectOutputStream(new FileOutputStream(file));
+            outputStream.writeObject(myTank);
+            outputStream.writeObject(objs);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if(outputStream!=null) {
+                try {
+                    outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+    public void load(){
+        File file = new File("d:/tankData/my.data");
+        ObjectInputStream inputStream=null;
+        try {
+            inputStream = new ObjectInputStream(new FileInputStream(file));
+            myTank= (Tank) inputStream.readObject();
+            objs= (List<GameObject>) inputStream.readObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            if(inputStream!=null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }

@@ -10,8 +10,33 @@ public class Buller  extends GameObject{
     private Rectangle rect=new Rectangle(0,0,0,0);
     public static int WIDTH = ResourceMgr.bulletD.getWidth();
     public boolean isLving=true;
+    private boolean isUsed=false;
     public static int HEIGHT = ResourceMgr.bulletD.getHeight();
     Group group;
+
+    public boolean isUsed() {
+        return isUsed;
+    }
+
+    public void setUsed(boolean used) {
+        isUsed = used;
+    }
+
+    public Dir getDir() {
+        return dir;
+    }
+
+    public void setDir(Dir dir) {
+        this.dir = dir;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
 
     public Rectangle getRect() {
         return rect;
@@ -33,7 +58,7 @@ public class Buller  extends GameObject{
     public void paint(Graphics g) {
 //        Color c = g.getColor();
 //        g.setColor(Color.red);
-        move();
+
         switch(dir) {
             case LEFT:
                 g.drawImage(ResourceMgr.bulletL, x, y, null);
@@ -48,6 +73,7 @@ public class Buller  extends GameObject{
                 g.drawImage(ResourceMgr.bulletD, x, y, null);
                 break;
         }
+        move();
 //        g.setColor(c);
 
     }
@@ -81,7 +107,11 @@ public class Buller  extends GameObject{
         }
         rect.x=x;
         rect.y=y;
-        if(x<0||y<0||x>TankFrame.GAME_WIDTH||y>TankFrame.GAME_HEIGHT||!isLving)GameModel.getInstance().remove(this);
+        if(x<0||y<0||x>TankFrame.GAME_WIDTH||y>TankFrame.GAME_HEIGHT||!isLving){
+            GameModel.getInstance().remove(this);
+            isLving=true;
+            isUsed=false;
+        }
     }
 
     public boolean collideWith(Tank tank) {

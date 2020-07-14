@@ -1,4 +1,8 @@
 package com.jintang;
+import com.jintang.observer.FireEvent;
+import com.jintang.observer.FireObserverImpl;
+import com.jintang.observer.IObserver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
@@ -94,9 +98,18 @@ public class TankFrame extends Frame {
                     break;
 
                 case KeyEvent.VK_CONTROL:
-                    GameModel.getInstance().getMyTank().fire();
+//                    GameModel.getInstance().getMyTank().fire();
+                    FireEvent fireEvent = new FireEvent(GameModel.getInstance().getMyTank());
+                    for (int i = 0; i < GameModel.getInstance().getObservers().size(); i++) {
+                        GameModel.getInstance().getObservers().get(i).fireActionEvent(fireEvent);
+                    }
                     break;
-
+                case KeyEvent.VK_S:
+                   GameModel.getInstance().save();
+                    break;
+                case KeyEvent.VK_L:
+                    GameModel.getInstance().load();
+                    break;
                 default:
                     break;
             }

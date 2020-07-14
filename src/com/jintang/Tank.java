@@ -16,7 +16,6 @@ public class Tank  extends GameObject {
     private boolean moving=true;
 //    private Buller buller;
     int oldx=200,oldy=200;
-    private final int MaxBullers=100;
     private Group group;
     public boolean isLving=true;
     public static final int Tank_WIDTH=ResourceMgr.badTankL.getWidth(),Tank_HEIGHT=ResourceMgr.badTankL.getHeight();
@@ -29,6 +28,15 @@ public class Tank  extends GameObject {
     }
     private boolean isCollider=false;
     private Dir colliderDir;
+
+    public boolean isCollider() {
+        return isCollider;
+    }
+
+    public void setCollider(boolean collider) {
+        isCollider = collider;
+    }
+
     public int getY() {
         return y;
     }
@@ -56,9 +64,7 @@ public class Tank  extends GameObject {
 
 
 
-    public int getMaxBullers() {
-        return MaxBullers;
-    }
+
 
     public Group getGroup() {
         return group;
@@ -102,6 +108,7 @@ public class Tank  extends GameObject {
         randomDir();
         move();
         checkBorder();
+
 //        g.drawImage(image,x,y,image.getWidth(),image.getHeight(),null);
         switch(dir) {
             case LEFT:
@@ -145,8 +152,11 @@ public class Tank  extends GameObject {
     }
     public void back(boolean flag){
         if(flag&&group==Group.GOOD){
-            isCollider=true;
-            colliderDir=dir;
+            if(!isCollider){
+                isCollider=true;
+                colliderDir=dir;
+            }
+
         }else{
             x=oldx;
             y=oldy;
@@ -155,7 +165,7 @@ public class Tank  extends GameObject {
     private Random random=new Random();
     private void move() {
         if(!moving||(isCollider&&colliderDir==dir))return;
-        isCollider=false;
+//        isCollider=false;
         oldx=x;
         oldy=y;
         switch (dir) {
@@ -186,7 +196,11 @@ public class Tank  extends GameObject {
     public void fire() {
         fireStrategy.fire(this);
     }
-
+    public void procUnintersect(Wall wall){
+        if(this.wall==wall){
+            isCollider=false;
+        }
+    };
     public void die() {
         isLving=false;
         int bx = x,by=y;
@@ -194,5 +208,9 @@ public class Tank  extends GameObject {
         by=this.getY()+(ResourceMgr.badTankL.getHeight()/2)-Explode.HEIGHT/2;
         Explode explode = new Explode(bx, by);
 //        GameModel.getInstance().add(explode);
+    }
+    private  Wall wall;
+    public void setWall(Wall wall) {
+        this.wall = wall;
     }
 }
