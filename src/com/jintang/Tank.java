@@ -17,7 +17,7 @@ public class Tank  extends GameObject {
     private final int SPEED=5;
     private UUID id =UUID.randomUUID();
     private Dir dir= Dir.LEFT;
-    private boolean moving=true;
+    private boolean moving=false;
 //    private Buller buller;
     int oldx=200,oldy=200;
     private Group group;
@@ -34,7 +34,8 @@ public class Tank  extends GameObject {
         rect.y=tankJoinMsg.y;
         rect.width=Tank_WIDTH;
         rect.height=Tank_HEIGHT;
-        fireStrategy=this.group==Group.GOOD?new QiangFireStrategy():new DefaultStrategy();
+//        fireStrategy=this.group==Group.GOOD?new QiangFireStrategy():new DefaultStrategy();
+        fireStrategy=new DefaultStrategy();
         GameModel.getInstance().add(this);
     }
 
@@ -119,7 +120,8 @@ public class Tank  extends GameObject {
         rect.y=y;
         rect.width=Tank_WIDTH;
         rect.height=Tank_HEIGHT;
-        fireStrategy=this.group==Group.GOOD?new QiangFireStrategy():new DefaultStrategy();
+//        fireStrategy=this.group==Group.GOOD?new QiangFireStrategy():new DefaultStrategy();
+        fireStrategy=new DefaultStrategy();
         GameModel.getInstance().add(this);
     }
 

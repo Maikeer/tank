@@ -34,10 +34,19 @@ public class MsgDecoder extends ByteToMessageDecoder {
             case TankDirChanged:
                 break;
             case TankStop:
+                TankStopMsg tankstopMsg = new TankStopMsg();
+                tankstopMsg.parse(bytes);
+                list.add(tankstopMsg);
                 break;
             case TankStartMoving:
+                TankStartMovingMsg tankStartMovingMsg = new TankStartMovingMsg();
+                tankStartMovingMsg.parse(bytes);
+                list.add(tankStartMovingMsg);
                 break;
             case BulletNew:
+                TankBulletNewMsg tankBulletNewMsg = new TankBulletNewMsg();
+                tankBulletNewMsg.parse(bytes);
+                list.add(tankBulletNewMsg);
                 break;
             case TankDie:
                 break;

@@ -2,6 +2,10 @@ package com.jintang;
 import com.jintang.observer.FireEvent;
 import com.jintang.observer.FireObserverImpl;
 import com.jintang.observer.IObserver;
+import com.jintang.web.Client;
+import com.jintang.web.TankBulletNewMsg;
+import com.jintang.web.TankStartMovingMsg;
+import com.jintang.web.TankStopMsg;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +40,7 @@ public class TankFrame extends Frame {
             }
         });
         addKeyListener(new MyKeyListener());
-        new Thread(()->new Audio("audio/war1.wav").play()).start();
+//        new Thread(()->new Audio("audio/war1.wav").play()).start();
     }
     class MyKeyListener extends KeyAdapter {
 
@@ -72,7 +76,7 @@ public class TankFrame extends Frame {
                     break;
             }
 
-            new Thread(()->new Audio("audio/tank_move.wav").play()).start();
+//            new Thread(()->new Audio("audio/tank_move.wav").play()).start();
         }
 
         @Override
@@ -99,10 +103,12 @@ public class TankFrame extends Frame {
 
                 case KeyEvent.VK_CONTROL:
 //                    GameModel.getInstance().getMyTank().fire();
+                    Client.INSTANCE.send(new TankBulletNewMsg(GameModel.getInstance().getMyTank()));
                     FireEvent fireEvent = new FireEvent(GameModel.getInstance().getMyTank());
                     for (int i = 0; i < GameModel.getInstance().getObservers().size(); i++) {
                         GameModel.getInstance().getObservers().get(i).fireActionEvent(fireEvent);
                     }
+
                     break;
                 case KeyEvent.VK_S:
                    GameModel.getInstance().save();
@@ -122,6 +128,7 @@ public class TankFrame extends Frame {
 
             if (!bL && !bU && !bR && !bD) {
                 myTank.setMoving(false);
+                Client.INSTANCE.send(new TankStopMsg(myTank));
             }else{
                 myTank.setMoving(true);
                 if(bL){
@@ -136,6 +143,7 @@ public class TankFrame extends Frame {
                 if(bD){
                     myTank.setDir(Dir.DOWN);
                 }
+                Client.INSTANCE.send(new TankStartMovingMsg(myTank));
             }
 //            repaint();
 //            //save the old dir

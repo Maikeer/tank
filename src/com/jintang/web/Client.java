@@ -19,7 +19,7 @@ public class Client {
 
     }
  public void connect(){
-     NioEventLoopGroup g = new NioEventLoopGroup(1);
+     NioEventLoopGroup g = new NioEventLoopGroup(2);
      Bootstrap bootstrap = new Bootstrap();
      try {
          ChannelFuture future = bootstrap.group(g).channel(NioSocketChannel.class).handler(new ClientChannelInitializer())

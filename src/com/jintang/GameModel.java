@@ -106,7 +106,7 @@ protected List<GameObject> objs=new ArrayList();
     }
     public void init(){
         myTank=new Tank(x,y,dir,Group.GOOD);
-        myTank.setMoving(false);
+//        myTank.setMoving(false);
    /*     for (int i = 0; i <maxBadTank ; i++) {
             Tank tank = new Tank(30 + i * 100, 30, Dir.DOWN, Group.BAD);
 //            badTanks.add(tank);
