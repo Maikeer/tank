@@ -1,4 +1,6 @@
 package com.jintang;
+import com.jintang.web.TankJoinMsg;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -8,10 +10,12 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class Tank  extends GameObject {
     int x=200,y=200;
     private final int SPEED=5;
+    private UUID id =UUID.randomUUID();
     private Dir dir= Dir.LEFT;
     private boolean moving=true;
 //    private Buller buller;
@@ -19,6 +23,21 @@ public class Tank  extends GameObject {
     private Group group;
     public boolean isLving=true;
     public static final int Tank_WIDTH=ResourceMgr.badTankL.getWidth(),Tank_HEIGHT=ResourceMgr.badTankL.getHeight();
+
+    public Tank(TankJoinMsg tankJoinMsg) {
+        this.x = tankJoinMsg.x;
+        this.y = tankJoinMsg.y;
+        this.dir = tankJoinMsg.dir;
+        this.id=tankJoinMsg.id;
+        this.group=tankJoinMsg.group;
+        rect.x=tankJoinMsg.x;
+        rect.y=tankJoinMsg.y;
+        rect.width=Tank_WIDTH;
+        rect.height=Tank_HEIGHT;
+        fireStrategy=this.group==Group.GOOD?new QiangFireStrategy():new DefaultStrategy();
+        GameModel.getInstance().add(this);
+    }
+
     public int getX() {
         return x;
     }
@@ -62,9 +81,17 @@ public class Tank  extends GameObject {
         return dir;
     }
 
+    public boolean isMoving() {
+        return moving;
+    }
 
+    public UUID getId() {
+        return id;
+    }
 
-
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public Group getGroup() {
         return group;

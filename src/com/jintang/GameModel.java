@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GameModel {
 
@@ -45,6 +47,14 @@ protected List<GameObject> objs=new ArrayList();
 
     public void setMyTank(Tank myTank) {
         this.myTank = myTank;
+    }
+    private ConcurrentHashMap<UUID,Tank> badTanks= new ConcurrentHashMap<>();
+    public Tank findTankByUUID(UUID id) {
+        return badTanks.get(id);
+    }
+
+    public void addTank(Tank t) {
+        badTanks.put(t.getId(),t);
     }
 //
 //    public List<Tank> getBadTanks() {
@@ -97,10 +107,10 @@ protected List<GameObject> objs=new ArrayList();
     public void init(){
         myTank=new Tank(x,y,dir,Group.GOOD);
         myTank.setMoving(false);
-        for (int i = 0; i <maxBadTank ; i++) {
+   /*     for (int i = 0; i <maxBadTank ; i++) {
             Tank tank = new Tank(30 + i * 100, 30, Dir.DOWN, Group.BAD);
 //            badTanks.add(tank);
-        }
+        }*/
         // 初始化墙
         add(new Wall(150, 150, 200, 50));
         add(new Wall(550, 150, 200, 50));
@@ -213,4 +223,5 @@ protected List<GameObject> objs=new ArrayList();
         }
 
     }
+
 }
