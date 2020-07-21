@@ -127,7 +127,7 @@ public class TankDieMsg extends Msg {
 	public void handle() {
 //		System.err.println(this.id.equals(GameModel.getInstance().getMyTank().getId())+"====="+GameModel.getInstance().findTankByUUID(this.id));
 		Tank myTank = GameModel.getInstance().getMyTank();
-		if(this.id.equals(myTank.getId())) {
+		if(myTank!=null&&this.id.equals(myTank.getId())) {
 
 			GameModel.getInstance().setMyTank(null);
 		}else{
