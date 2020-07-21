@@ -49,6 +49,9 @@ public class MsgDecoder extends ByteToMessageDecoder {
                 list.add(tankBulletNewMsg);
                 break;
             case TankDie:
+                TankDieMsg tankDieMsg = new TankDieMsg();
+                tankDieMsg.parse(bytes);
+                list.add(tankDieMsg);
                 break;
         }
     }

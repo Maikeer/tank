@@ -1,4 +1,6 @@
 package com.jintang;
+import com.jintang.web.Client;
+import com.jintang.web.TankDieMsg;
 import com.jintang.web.TankJoinMsg;
 
 import javax.imageio.ImageIO;
@@ -236,6 +238,11 @@ public class Tank  extends GameObject {
         bx=this.getX()+(ResourceMgr.badTankU.getWidth()/2)-Explode.WIDTH/2;
         by=this.getY()+(ResourceMgr.badTankL.getHeight()/2)-Explode.HEIGHT/2;
         Explode explode = new Explode(bx, by);
+        Tank myTank = GameModel.getInstance().getMyTank();
+        if(myTank!=null&&myTank.getId()!=id){
+            Client.INSTANCE.send(new TankDieMsg(this));
+        }
+
 //        GameModel.getInstance().add(explode);
     }
     private  Wall wall;

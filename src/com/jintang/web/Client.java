@@ -16,7 +16,7 @@ public class Client {
     public static final Client INSTANCE = new Client();
     private SocketChannel channel;
     private Client() {
-
+        System.err.println("init....");
     }
  public void connect(){
      NioEventLoopGroup g = new NioEventLoopGroup(2);
@@ -30,7 +30,8 @@ public class Client {
      }
  }
     public void send(Msg msg) {
-        channel.writeAndFlush(msg);
+        if(channel!=null)
+            channel.writeAndFlush(msg);
 
     }
 

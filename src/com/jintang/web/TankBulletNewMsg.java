@@ -127,7 +127,8 @@ public class TankBulletNewMsg extends Msg {
 	@Override
 	public void handle() {
 //		System.err.println(this.id.equals(GameModel.getInstance().getMyTank().getId())+"====="+GameModel.getInstance().findTankByUUID(this.id));
-		if(this.id.equals(GameModel.getInstance().getMyTank().getId())) return;
+		Tank myTank = GameModel.getInstance().getMyTank();
+		if(myTank!=null&&this.id.equals(myTank.getId())) return;
 //		System.out.println(this);
 //		Tank t = new Tank(this);
 //		GameModel.getInstance().addTank(t);

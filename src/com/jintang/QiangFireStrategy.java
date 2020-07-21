@@ -18,6 +18,7 @@ public class QiangFireStrategy implements FireStrategy {
             buller.y=by;
             buller.setDir(Dir.values()[i]);
             buller.setGroup(Group.GOOD);
+            buller.setId(tank.getId());
             GameModel.getInstance().add(buller);
         }
 
@@ -28,6 +29,6 @@ public class QiangFireStrategy implements FireStrategy {
 //        frame.bullets.add(new Buller(Dir.DOWN,bx,by,Group.GOOD,frame));
 //        Buller buller=new Buller(tank.getDir(),bx,by,frame);
 //        if(frame.bullets.size()<tank.getMaxBullers()) frame.bullets.add(buller);
-        if(tank.getGroup() == Group.GOOD) new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
+//        if(tank.getGroup() == Group.GOOD) new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
     }
 }

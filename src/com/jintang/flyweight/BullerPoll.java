@@ -7,6 +7,7 @@ import com.jintang.Group;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class BullerPoll {
     private static BullerPoll instance=new BullerPoll();
@@ -18,7 +19,7 @@ public class BullerPoll {
 
     private BullerPoll() {
         for (int i = 0; i <MaxBullers ; i++) {
-            Buller buller=new Buller(Dir.UP,0,0, Group.BAD);
+            Buller buller=new Buller(Dir.UP,0,0, Group.BAD, UUID.randomUUID());
             bullerList.add(buller);
         }
     }
@@ -34,6 +35,6 @@ public class BullerPoll {
             }
         }
         System.err.println("no buller get from poll..");
-        return new Buller(Dir.UP,0,0, Group.BAD);
+        return new Buller(Dir.UP,0,0, Group.BAD,UUID.randomUUID());
     }
 }

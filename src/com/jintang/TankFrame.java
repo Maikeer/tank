@@ -2,10 +2,7 @@ package com.jintang;
 import com.jintang.observer.FireEvent;
 import com.jintang.observer.FireObserverImpl;
 import com.jintang.observer.IObserver;
-import com.jintang.web.Client;
-import com.jintang.web.TankBulletNewMsg;
-import com.jintang.web.TankStartMovingMsg;
-import com.jintang.web.TankStopMsg;
+import com.jintang.web.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,13 +30,20 @@ public class TankFrame extends Frame {
         setVisible(true);
 
         GameModel.getInstance().init();
+//        addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                System.exit(0);
+//            }
+//        });
+        addKeyListener(new MyKeyListener());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                Client.INSTANCE.send(new TankDieMsg(GameModel.getInstance().getMyTank()));
                 System.exit(0);
             }
         });
-        addKeyListener(new MyKeyListener());
 //        new Thread(()->new Audio("audio/war1.wav").play()).start();
     }
     class MyKeyListener extends KeyAdapter {
@@ -52,7 +56,7 @@ public class TankFrame extends Frame {
         @Override
         public void keyPressed(KeyEvent e) {
             int key = e.getKeyCode();
-
+            if(GameModel.getInstance().getMyTank()==null)return;
             switch (key) {
                 case KeyEvent.VK_LEFT:
                     bL = true;
@@ -81,6 +85,7 @@ public class TankFrame extends Frame {
 
         @Override
         public void keyReleased(KeyEvent e) {
+            if(GameModel.getInstance().getMyTank()==null)return;
             int key = e.getKeyCode();
 
             switch (key) {

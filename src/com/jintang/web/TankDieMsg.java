@@ -126,7 +126,15 @@ public class TankDieMsg extends Msg {
 	@Override
 	public void handle() {
 //		System.err.println(this.id.equals(GameModel.getInstance().getMyTank().getId())+"====="+GameModel.getInstance().findTankByUUID(this.id));
-		if(this.id.equals(GameModel.getInstance().getMyTank().getId())) return;
+		Tank myTank = GameModel.getInstance().getMyTank();
+		if(this.id.equals(myTank.getId())) {
+
+			GameModel.getInstance().setMyTank(null);
+		}else{
+			Tank tankByUUID = GameModel.getInstance().findTankByUUID(id);
+			tankByUUID.setLving(false);
+			//todo 移除保存的该tank的数据
+		};
 //		System.out.println(this);
 //		Tank t = new Tank(this);
 //		GameModel.getInstance().addTank(t);

@@ -2,11 +2,12 @@ package com.jintang;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Buller  extends GameObject{
     private static final int SPEED=10;
     private Dir dir;
-
+    private UUID id;
     private Rectangle rect=new Rectangle(0,0,0,0);
     public static int WIDTH = ResourceMgr.bulletD.getWidth();
     public boolean isLving=true;
@@ -42,7 +43,15 @@ public class Buller  extends GameObject{
         return rect;
     }
 
-    public Buller(Dir dir, int x, int y, Group group) {
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Buller(Dir dir, int x, int y, Group group, UUID id) {
 
         this.dir = dir;
         this.x = x;
@@ -52,6 +61,7 @@ public class Buller  extends GameObject{
         rect.width = WIDTH;
         rect.height = HEIGHT;
         this.group=group;
+        this.id=id;
 //        GameModel.getInstance().add(this);
     }
 
@@ -115,8 +125,10 @@ public class Buller  extends GameObject{
     }
 
     public boolean collideWith(Tank tank) {
-        if(this.group==Group.BAD&&tank.getGroup()==Group.BAD)return true;
-        if(tank.getGroup()==Group.GOOD)return true;
+//        if(this.group==Group.BAD&&tank.getGroup()==Group.BAD)return true;
+        System.err.println(this.id+"============"+tank.getId()+"is xiangtong"+(this.id.equals(tank.getId())));
+        if(this.id.equals(tank.getId()))return true;
+//        if(tank.getGroup()==Group.GOOD)return true;
         if(this.rect.intersects(tank.rect)){
             tank.die();
             this.die();

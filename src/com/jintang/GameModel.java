@@ -134,12 +134,12 @@ protected List<GameObject> objs=new ArrayList();
         g.drawString("tanks:" + objs.size(), 10, 80);
 //        g.drawString("explodes" + explodes.size(), 10, 100);
         g.setColor(c);
-        try {
-            if(myTank!=null)
-                myTank.paint(g);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            if(myTank!=null)
+//                myTank.paint(g);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
 //        System.out.println("badTanks.size()"+badTanks.size());
@@ -172,7 +172,7 @@ protected List<GameObject> objs=new ArrayList();
         Iterator<GameObject> iterator = objs.iterator();
         while (iterator.hasNext()){
             GameObject next = iterator.next();
-            if(next instanceof Tank &&((Tank) next).getGroup()==Group.BAD&&!((Tank) next).isLving){
+            if(next instanceof Tank &&/*((Tank) next).getGroup()==Group.BAD&&*/!((Tank) next).isLving){
                 iterator.remove();
             }
         }

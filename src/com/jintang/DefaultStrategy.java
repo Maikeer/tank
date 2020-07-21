@@ -19,7 +19,8 @@ public class DefaultStrategy implements FireStrategy {
         buller.y=by;
         buller.setDir(tank.getDir());
         buller.setGroup(Group.BAD);
+        buller.setId(tank.getId());
         GameModel.getInstance().add(buller);
-        if(tank.getGroup() == Group.GOOD) new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
+//        if(tank.getGroup() == Group.GOOD) new Thread(()->new Audio("audio/tank_fire.wav").play()).start();
     }
 }
